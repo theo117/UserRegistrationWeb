@@ -4,11 +4,24 @@ import { Link } from "react-router-dom";
 
 export default function Home() {
   const [users, setUsers] = useState([]);
+  const [error, setError] = useState("");
   const API_BASE = process.env.REACT_APP_API_URL;
 
   const loadUsers = useCallback(async () => {
-    const result = await axios.get(`${API_BASE}/users`);
-    setUsers(result.data);
+    if (!API_BASE) {
+      setError("Missing REACT_APP_API_URL environment variable.");
+      setUsers([]);
+      return;
+    }
+
+    try {
+      const result = await axios.get(`${API_BASE}/users`);
+      setUsers(Array.isArray(result.data) ? result.data : []);
+      setError("");
+    } catch (err) {
+      setError("Failed to load users from backend.");
+      setUsers([]);
+    }
   }, [API_BASE]);
 
   useEffect(() => {
@@ -16,14 +29,19 @@ export default function Home() {
   }, [loadUsers]);
 
   const deleteUser = async (id) => {
-    await axios.delete(`${API_BASE}/user/${id}`);
-    loadUsers();
-    console.log("User deleted successfully");
+    try {
+      await axios.delete(`${API_BASE}/user/${id}`);
+      loadUsers();
+      console.log("User deleted successfully");
+    } catch (err) {
+      setError("Failed to delete user.");
+    }
   };
 
   return (
     <div className='container'>
       <div className='py-4'>
+        {error && <div className="alert alert-danger">{error}</div>}
         <table className="table border shadow">
           <thead>
             <tr>
