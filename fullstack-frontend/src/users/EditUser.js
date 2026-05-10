@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import api, { getApiErrorMessage } from "../api";
 
 export default function EditUser() {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   const { id } = useParams();
-  const API_BASE = process.env.REACT_APP_API_URL;
 
   const [user, setUser] = useState({
     name: "",
     username: "",
     email: "",
   });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   const { name, username, email } = user;
 
@@ -21,79 +23,112 @@ export default function EditUser() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    await axios.put(`${API_BASE}/user/${id}`, user);
-    console.log("User updated successfully");
-    navigate("/");
+    setSaving(true);
+    setError("");
+
+    try {
+      await api.put(`/user/${id}`, user);
+      navigate("/");
+    } catch (err) {
+      setError(getApiErrorMessage(err, "Failed to update user."));
+    } finally {
+      setSaving(false);
+    }
   };
 
   useEffect(() => {
     const loadUser = async () => {
-      const result = await axios.get(`${API_BASE}/user/${id}`);
-      console.log("Loaded user:", result.data);
-      setUser(result.data);
+      setLoading(true);
+      try {
+        const result = await api.get(`/user/${id}`);
+        setUser(result.data);
+        setError("");
+      } catch (err) {
+        setError(getApiErrorMessage(err, "Failed to load user."));
+      } finally {
+        setLoading(false);
+      }
     };
 
     loadUser();
-  }, [API_BASE, id]);
+  }, [id]);
 
   return (
-    <div className="container">
+    <main className="container py-4">
       <div className="row">
-        <div className="col-md-6 offset-md-3 border rounded p-4 mt-2">
-          <h2 className="text-center m-4">Edit User</h2>
+        <div className="col-md-7 col-lg-6 mx-auto">
+          <div className="content-panel text-start">
+            <h1 className="h3 text-center mb-4">Edit User</h1>
+            {error && <div className="alert alert-danger">{error}</div>}
 
-          <form onSubmit={onSubmit}>
-            <div className="mb-3">
-              <label htmlFor="Name" className="form-label">
-                Name
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Enter your name"
-                name="name"
-                value={name}
-                onChange={onInputChange}
-              />
-            </div>
+            {loading ? (
+              <div className="text-muted py-4 text-center">Loading user...</div>
+            ) : (
+              <form onSubmit={onSubmit}>
+                <div className="mb-3">
+                  <label htmlFor="name" className="form-label">
+                    Name
+                  </label>
+                  <input
+                    id="name"
+                    type="text"
+                    className="form-control"
+                    placeholder="Enter your name"
+                    name="name"
+                    value={name}
+                    onChange={onInputChange}
+                    maxLength="80"
+                    required
+                  />
+                </div>
 
-            <div className="mb-3">
-              <label htmlFor="Username" className="form-label">
-                Username
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Enter your username"
-                name="username"
-                value={username}
-                onChange={onInputChange}
-              />
-            </div>
+                <div className="mb-3">
+                  <label htmlFor="username" className="form-label">
+                    Username
+                  </label>
+                  <input
+                    id="username"
+                    type="text"
+                    className="form-control"
+                    placeholder="Enter your username"
+                    name="username"
+                    value={username}
+                    onChange={onInputChange}
+                    maxLength="50"
+                    required
+                  />
+                </div>
 
-            <div className="mb-3">
-              <label htmlFor="Email" className="form-label">
-                Email
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Enter your email address"
-                name="email"
-                value={email}
-                onChange={onInputChange}
-              />
-            </div>
+                <div className="mb-3">
+                  <label htmlFor="email" className="form-label">
+                    Email
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    className="form-control"
+                    placeholder="Enter your email address"
+                    name="email"
+                    value={email}
+                    onChange={onInputChange}
+                    maxLength="120"
+                    required
+                  />
+                </div>
 
-            <button type="submit" className="btn btn-outline-primary">
-              Submit
-            </button>
-            <Link className="btn btn-outline-danger mx-2" to="/">
-              Cancel
-            </Link>
-          </form>
+                <div className="d-flex gap-2">
+                  <button type="submit" className="btn btn-primary" disabled={saving}>
+                    {saving ? "Saving..." : "Submit"}
+                  </button>
+                  <Link className="btn btn-outline-secondary" to="/">
+                    Cancel
+                  </Link>
+                </div>
+              </form>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

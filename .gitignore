@@ -1,3 +1,19 @@
+# Java
+fullstack-backend/target/
 
-fullstack-frontend/node_modules
-fullstack-frontend/build
+# Node
+fullstack-frontend/node_modules/
+fullstack-frontend/build/
+
+# Local environment
+fullstack-frontend/.env
+fullstack-frontend/.env.local
+fullstack-frontend/.env.development.local
+fullstack-frontend/.env.test.local
+fullstack-frontend/.env.production.local
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

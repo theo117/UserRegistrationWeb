@@ -1,88 +1,108 @@
-import React from "react";
 import { useState } from "react";
-import axios from "axios";
-import {Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import api, { getApiErrorMessage } from "../api";
 
 export default function AddUser() {
+  const navigate = useNavigate();
 
-    let navigate = useNavigate();
-    const API_BASE = process.env.REACT_APP_API_URL;
+  const [user, setUser] = useState({
+    name: "",
+    username: "",
+    email: "",
+  });
+  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
 
-    const [user, setUser] = useState({
-        name: "",
-        username: "",
-        email: "",
-    });
+  const { name, username, email } = user;
 
-    const{name, username, email} = user;
+  const onInputChange = (e) => {
+    setUser({ ...user, [e.target.name]: e.target.value });
+  };
 
-    const onInputChange = e => {
-        setUser({...user, [e.target.name]: e.target.value});
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    setError("");
+
+    try {
+      await api.post("/user", user);
+      navigate("/");
+    } catch (err) {
+      setError(getApiErrorMessage(err, "Failed to add user."));
+    } finally {
+      setSaving(false);
     }
+  };
 
-    const onSubmit = async e => {
-        e.preventDefault();
-        await axios.post(`${API_BASE}/user`, user);
-        console.log("User added successfully");
-        navigate("/");
-        // Redirect or show success message here
-    }
+  return (
+    <main className="container py-4">
+      <div className="row">
+        <div className="col-md-7 col-lg-6 mx-auto">
+          <div className="content-panel text-start">
+            <h1 className="h3 text-center mb-4">Register User</h1>
+            {error && <div className="alert alert-danger">{error}</div>}
 
-
-  return(<div className="container">
-    
-        <div className="row">
-            <div className="col-md-6 offset-md-3 border rounded p-4 mt-2">
-            <h2 className="text-center m-4">Register User</h2>
-
-            <form onSubmit={e => onSubmit(e)}>
-                <div className="mb-3">
-                 <label htmlFor="Name" className="form-label">
-                Name
+            <form onSubmit={onSubmit}>
+              <div className="mb-3">
+                <label htmlFor="name" className="form-label">
+                  Name
                 </label>
-
                 <input
-                type='text'
-                 className='form-control'
-                 placeholder='Enter your name'
-                 name="name"
-                 value={name}
-                 onChange={(e) => onInputChange(e)}
+                  id="name"
+                  type="text"
+                  className="form-control"
+                  placeholder="Enter your name"
+                  name="name"
+                  value={name}
+                  onChange={onInputChange}
+                  maxLength="80"
+                  required
                 />
-            </div>
-             <div className="mb-3">
-                 <label htmlFor="Username" className="form-label">
-                Username
+              </div>
+              <div className="mb-3">
+                <label htmlFor="username" className="form-label">
+                  Username
                 </label>
-
                 <input
-                type='text'
-                 className='form-control'
-                 placeholder='Enter your username'
-                 name="username"
-                 value={username}
-                onChange={(e) => onInputChange(e)}
+                  id="username"
+                  type="text"
+                  className="form-control"
+                  placeholder="Enter your username"
+                  name="username"
+                  value={username}
+                  onChange={onInputChange}
+                  maxLength="50"
+                  required
                 />
-            </div>
-             <div className="mb-3">
-                 <label htmlFor="Email" className="form-label">
-                Email
+              </div>
+              <div className="mb-3">
+                <label htmlFor="email" className="form-label">
+                  Email
                 </label>
-
                 <input
-                type='text'
-                 className='form-control'
-                 placeholder='Enter your email address'
-                 name="email"
-                 value={email}
-                 onChange={(e) => onInputChange(e)}
-                 />
-            </div>
-            <button type="submit" className="btn btn-outline-primary">Submit</button>
-            <Link className="btn btn-outline-danger mx-2" to="/">Cancel</Link>
+                  id="email"
+                  type="email"
+                  className="form-control"
+                  placeholder="Enter your email address"
+                  name="email"
+                  value={email}
+                  onChange={onInputChange}
+                  maxLength="120"
+                  required
+                />
+              </div>
+              <div className="d-flex gap-2">
+                <button type="submit" className="btn btn-primary" disabled={saving}>
+                  {saving ? "Saving..." : "Submit"}
+                </button>
+                <Link className="btn btn-outline-secondary" to="/">
+                  Cancel
+                </Link>
+              </div>
             </form>
-         </div>   
-    </div>
-    </div>
-  )
+          </div>
+        </div>
+      </div>
+    </main>
+  );
 }

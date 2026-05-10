@@ -1,38 +1,67 @@
 .App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
   min-height: 100vh;
+  text-align: center;
+  background: #f5f7fb;
+  color: #172033;
+}
+
+.app-navbar {
+  background: #1f3f77;
+  box-shadow: 0 8px 24px rgba(31, 63, 119, 0.12);
+}
+
+.content-panel {
+  background: #ffffff;
+  border: 1px solid #dfe6f2;
+  border-radius: 8px;
+  box-shadow: 0 12px 32px rgba(23, 32, 51, 0.08);
+  padding: 1.5rem;
+}
+
+.empty-state {
+  border: 1px dashed #b8c4d8;
+  border-radius: 8px;
+  padding: 3rem 1rem;
+}
+
+.details-list {
+  border: 1px solid #dfe6f2;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.details-list > div {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid #dfe6f2;
 }
 
-.App-link {
-  color: #61dafb;
+.details-list > div:last-child {
+  border-bottom: 0;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.table {
+  margin-bottom: 0;
+}
+
+.table thead th {
+  background: #eef3fa;
+  color: #44516a;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+@media (max-width: 576px) {
+  .content-panel {
+    padding: 1rem;
   }
-  to {
-    transform: rotate(360deg);
+
+  .details-list > div {
+    align-items: center;
+    flex-direction: column;
+    gap: 0.25rem;
+    text-align: center;
   }
 }
