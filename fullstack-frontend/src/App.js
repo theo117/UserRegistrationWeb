@@ -12,12 +12,15 @@ function App() {
     <div className="App">
       <Router>
         <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/adduser" element={<AddUser />} />
-          <Route path="/edituser/:id" element={<EditUser />} />
-          <Route path="/viewuser/:id" element={<ViewUser />} />
-        </Routes>
+        <main className="app-content">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/adduser" element={<AddUser />} />
+            <Route path="/edituser/:id" element={<EditUser />} />
+            <Route path="/viewuser/:id" element={<ViewUser />} />
+          </Routes>
+        </main>
+        <footer className="app-footer">Powered by Teodor Dev Tech</footer>
       </Router>
     </div>
   );
